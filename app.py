@@ -6,6 +6,7 @@ from flask import Flask
 from flask import render_template
 from flask import redirect
 from flask import jsonify
+from collections import OrderedDict
 import pymongo
 
 #################################################
@@ -30,16 +31,18 @@ def get_books():
     # Add Mongo Validation
     conn = url
     client = pymongo.MongoClient(conn)
+    
     # Define database and collection
     db = client.books_db
     collection = db.book_collection
-    print(collection)
-    # Desc order
+    
+    # Get the top 100 books with more comments (first criteria)
     books = collection.find().sort("ratings_count",-1).limit(100)
-    print("==============================")
-    print(books)
+    
+    # list of json objects
     books_json = []
-    # Iterate through collection
+
+    # Iterate through collection to build the list
     for book in books:
         book_json = {
             "title" : book["title"],
@@ -51,8 +54,12 @@ def get_books():
             "text_reviews_count" : book["text_reviews_count"],
             "cetegory" : book["category"]
         }
+        # Add element to list
         books_json.append(book_json)
-    
+
+    # Sort by average rating (descending) (second criteria)
+    books_json = sorted(books_json, key = lambda k:k['average_rating'], reverse=True)
+    # Send json result
     return jsonify({"books": books_json})
 
 
