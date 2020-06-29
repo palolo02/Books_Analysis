@@ -6,8 +6,12 @@ from flask import Flask
 from flask import render_template
 from flask import redirect
 from flask import jsonify
+from flask import request
 from collections import OrderedDict
+import math
+from datetime import datetime
 import pymongo
+import booksDB
 
 #################################################
 # DB Connection
@@ -16,7 +20,8 @@ import pymongo
 app = Flask(__name__)
 
 url = f'mongodb://localhost:27017/books_db'
-
+if(False):
+    booksDB.addDecade()
 
 #################################################
 # Flask Routes
@@ -62,7 +67,26 @@ def get_books():
     # Send json result
     return jsonify({"books": books_json})
 
+@app.route("/api/v1/books/decade", methods=["GET"])
+def get_books_decade():
+    # Get result from books per decade
+    books_json = booksDB.getBooksperDecade()
+    # Jsonify teh results
+    return jsonify({"books": books_json})
 
+@app.route("/api/v1/books/timeline/avgRating", methods=["GET"])
+def get_books_timeline_avgRating():
+    # Get result from books per decade
+    books_json = booksDB.getBooksTimelineAvgRating()
+    # Jsonify teh results
+    return jsonify({"books": books_json})
+
+@app.route("/api/v1/books/decade/<decade>", methods=["GET"])
+def get_books_decade_selection(decade):
+    # Get result from books per decade
+    books_json = booksDB.getBooksByDecadeSel(int(decade))
+    # Jsonify teh results
+    return jsonify({"books": books_json})
 
 
 if __name__ == "__main__":
