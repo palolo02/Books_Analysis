@@ -20,7 +20,7 @@ import booksDB
 app = Flask(__name__)
 
 url = f'mongodb://localhost:27017/books_db'
-if(False):
+if(True):
     booksDB.addDecade()
 
 #################################################

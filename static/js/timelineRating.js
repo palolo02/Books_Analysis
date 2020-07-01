@@ -9,7 +9,7 @@ d3.json("/api/v1/books/timeline/avgRating").then((incomingData) =>{
     var avgRatingAxis = books.map(b => b["avgRating"]);
     var avgRatingCountAxis = books.map(b => b["avgRatingCount"]);
     
-    render(books);
+    //render(books);
     plot(decadesAxis, avgRatingAxis);
     plotNoBooks(decadesAxis, booksAxis);
     plotRatingCount(decadesAxis, avgRatingCountAxis);
@@ -46,7 +46,7 @@ d3.json("api/v1/books/decade/2010").then((incomingData) =>{
 
 function render(books){
   console.log('Render')
-  var svg = d3.select("svg");
+  var svg = d3.select("#test");
   var margin = 250;
   var width = 800 - margin;
   var height = 800 - margin;
