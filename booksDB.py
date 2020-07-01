@@ -31,7 +31,10 @@ def addDecade():
             else:
                 decade = f"20{decade}"
         else:
-            decade = f"{decade}"
+            if(decade<10):
+                decade = f"190{decade}"
+            else:
+                decade = f"19{decade}"
         # Update decade field for each document
         collection.update_one({"_id":book["_id"]},{"$set":{"decade":int(decade)}})
         
