@@ -20,7 +20,7 @@ import booksDB
 app = Flask(__name__)
 
 url = f'mongodb://localhost:27017/books_db'
-if(True):
+if(False):
     booksDB.addDecade()
 
 #################################################
@@ -30,6 +30,12 @@ if(True):
 def home():
     print("======================================")
     return render_template("index.html")
+
+
+@app.route("/decades")
+def decades():
+    return render_template("decades.html")
+
 
 @app.route("/api/v1/books", methods=["GET"])
 def get_books():

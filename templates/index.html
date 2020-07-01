@@ -9,6 +9,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.7/d3.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <!-- <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css" />-->
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
         <link rel="stylesheet" type="text/css" href="/static/css/decade.css" />
     </head>
     <body>
@@ -23,6 +27,9 @@
                     <li class="nav-item active">
                       <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/decades">Decades</a>
+                      </li>
                     <li class="nav-item">
                       <a class="nav-link" href="#">Recommendation</a>
                     </li>
@@ -42,14 +49,12 @@
                         </div>
                         <!-- Top 100 per num pages vs rating -->
                         <div class="col-4-fluid">
-
                             <div class="card border-success mb-3" >
                                 <div class="card-body">
                                   <!-- <h4 class="card-title">Success card title</h4>                                   -->
                                   <div class = "container-fluid" id ="books_pages"></div>
                                 </div>
                               </div>
-                            
                         </div>
                         <!-- Top 100 Authors -->
                         <div class="col-2">
@@ -58,17 +63,25 @@
                     </div>
                     <!-- Timeline-->
                     <div class="row">
-                        <!-- Avg Rating per decade-->
-                        <div id="avgRating">
-                        </div>
-                        <!-- Number Books per decade-->
-                        <div id="noBooks">
-                        </div>
-                        <!-- Avg Rating per decade-->
-                        <div id="avgRatingCount">
-                        </div>
-                        <!-- Avg Rating per decade-->
-                        <div id="bubble">
+                        <div id="tabs" class="col-12">
+                            <ul>
+                                <li><a href="#avgRating">Average Rating</a></li>
+                                <li><a href="#noBooks">No books</a></li>
+                                <li><a href="#avgRatingCount">Average Rating Comments</a></li>
+                                <li><a href="#bubble">Bubble</a></li>
+                            </ul>
+                            <!-- Avg Rating per decade-->
+                            <div id="avgRating" class="row">
+                            </div>
+                            <!-- Number Books per decade-->
+                            <div id="noBooks" class="row">
+                            </div>
+                            <!-- Avg Rating per decade-->
+                            <div id="avgRatingCount" class="row">
+                            </div>
+                            <!-- Avg Rating per decade-->
+                            <div id="bubble" class="row">
+                            </div>
                         </div>
                     </div>
                     <div id="timeline" class="row">                        
@@ -107,7 +120,7 @@
             </div>
         </div>
         <script src="/static/js/app.js"></script>
-        <script src="/static/js/decade.js"></script>
         <script src="/static/js/timelineRating.js"></script>
+        <!--<script src="/static/js/decade.js"></script>-->
     </body>
 </html>
