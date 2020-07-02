@@ -8,12 +8,14 @@ d3.json("/api/v1/books/timeline/avgRating").then((incomingData) =>{
     var booksAxis = books.map(b => b["books"]);
     var avgRatingAxis = books.map(b => b["avgRating"]);
     var avgRatingCountAxis = books.map(b => b["avgRatingCount"]);
+    var avgNumPages = books.map(b => b["avgNumPages"]);
     var titles = books.map(b => b["title"]);
     
     //render(books);
-    plot(decadesAxis, avgRatingAxis);
+    plotAvgRating(decadesAxis, avgRatingAxis);
     plotNoBooks(decadesAxis, booksAxis);
     plotRatingCount(decadesAxis, avgRatingCountAxis);
+    plotNoPages(decadesAxis, avgNumPages);
     $("#tabs").tabs();
 })
 
@@ -42,7 +44,7 @@ d3.json("api/v1/books/decade/2010").then((incomingData) =>{
         width: 600
       };
       
-      Plotly.newPlot('bubble', data, layout);
+      //Plotly.newPlot('noPages', data, layout);
       
 });
 
@@ -126,7 +128,7 @@ function render(books){
 }
 
 
-function plot(decadesAxis, avgRatingAxis){
+function plotAvgRating(decadesAxis, avgRatingAxis){
   var trace1 = {
     x: decadesAxis,
     y: avgRatingAxis,
@@ -159,6 +161,7 @@ function plot(decadesAxis, avgRatingAxis){
     },
     yaxis: {
       zeroline: false,
+      range: [0,5],
       title: 'Average Rating of Books',
         titlefont: {
           size: 16,
@@ -205,6 +208,7 @@ function plotNoBooks(decadesAxis, booksAxis){
         },
         yaxis: {
           zeroline: false,
+          range: [0, 8000],
           title: 'Average Number of Books',
             titlefont: {
               size: 16,
@@ -217,7 +221,6 @@ function plotNoBooks(decadesAxis, booksAxis){
 }
 
 function plotRatingCount(decadesAxis, booksAxis){
-    
   booksAxis = booksAxis.map((b) => (Math.round((b + Number.EPSILON) * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 
     var trace1 = {
@@ -252,6 +255,7 @@ function plotRatingCount(decadesAxis, booksAxis){
         },
         yaxis: {
           zeroline: false,
+          range: [0,40000],
           title: 'Number of Rating Comments',
             titlefont: {
               size: 16,
@@ -262,6 +266,56 @@ function plotRatingCount(decadesAxis, booksAxis){
 
       Plotly.newPlot('avgRatingCount', data, layout);
 }
+
+
+function plotNoPages(decadesAxis, avgNumPages){
+    
+  avgNumPages = avgNumPages.map((b) => (Math.round((b + Number.EPSILON) * 100) / 100));
+  var trace1 = {
+      x: decadesAxis,
+      y: avgNumPages,
+      type: 'bar',
+      hoverinfo: 'none',
+      text: avgNumPages.map(String),
+      textposition: 'outside',
+      marker: {
+        color: 'rgb(142,124,195)',
+        opacity: 0.8,
+      }
+    };
+    
+    var data = [trace1];
+    
+    var layout = {
+      title: 'Average Number of Pages per Decade',
+      font:{
+        family: 'Raleway, sans-serif'
+      },
+      showlegend: false,
+      xaxis: {
+          range: decadesAxis,
+          tickangle: -45,
+          title: 'Decade',
+          titlefont: {
+            size: 16,
+            color: 'rgb(107, 107, 107)'
+          }
+      },
+      yaxis: {
+        zeroline: false,
+        range: [0, 600],
+        title: 'Average Number of Pages',
+          titlefont: {
+            size: 16,
+            color: 'rgb(107, 107, 107)'
+          },
+      }
+    };
+
+    Plotly.newPlot('noPages', data, layout);
+}
+
+
 
 
 

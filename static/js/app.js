@@ -33,7 +33,10 @@ d3.json("/api/v1/pages").then((incomingData) =>{
         }
     }
     var layout = {
-        
+        title: 'No Pages vs Average Rating (top 50)',
+        font:{
+          family: 'Raleway, sans-serif'
+        },
         showlegend: false,
         height: 500,
         width: 700,

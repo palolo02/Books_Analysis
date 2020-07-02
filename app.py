@@ -20,8 +20,12 @@ import booksDB
 app = Flask(__name__)
 
 url = f'mongodb://localhost:27017/books_db'
+
+
+
 if(False):
     booksDB.addDecade()
+    booksDB.splitAuthors()
 
 #################################################
 # Flask Routes
@@ -151,6 +155,19 @@ def get_books_decade_selection(decade):
     # Jsonify teh results
     return jsonify({"books": books_json})
 
+@app.route("/api/v1/books/authors", methods=["GET"])
+def get_books_authors():
+    # Get result from books per decade
+    books_json = booksDB.getAuthors()
+    # Jsonify teh results
+    return jsonify({"books": books_json})
+
+@app.route("/api/v1/books/categories", methods=["GET"])
+def get_books_categories():
+    # Get result from books per decade
+    books_json = booksDB.getCategory()
+    # Jsonify teh results
+    return jsonify({"books": books_json})
 
 if __name__ == "__main__":
     app.run(debug=True)
