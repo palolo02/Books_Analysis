@@ -8,41 +8,56 @@ d3.json("/api/v1/books/timeline/avgRating").then((incomingData) =>{
     var booksAxis = books.map(b => b["books"]);
     var avgRatingAxis = books.map(b => b["avgRating"]);
     var avgRatingCountAxis = books.map(b => b["avgRatingCount"]);
+    var avgNumPages = books.map(b => b["avgNumPages"]);
+    var titles = books.map(b => b["title"]);
     
     //render(books);
-    plot(decadesAxis, avgRatingAxis);
+    plotAvgRating(decadesAxis, avgRatingAxis);
     plotNoBooks(decadesAxis, booksAxis);
     plotRatingCount(decadesAxis, avgRatingCountAxis);
+    plotNoPages(decadesAxis, avgNumPages);
+    
 })
 
-d3.json("api/v1/books/decade/2010").then((incomingData) =>{
-    books = incomingData.books;
-    var x = books.map(b => b["text_reviews_count"]);
-    var y = books.map(b => b["average_rating"]);
+d3.json("api/v1/books/authors").then((incomingData) =>{
 
-    var trace1 = {
-        x: x,
-        y: y,
-        mode: 'markers',
-        marker: {
-          //color: ['rgb(93, 164, 214)', 'rgb(255, 144, 14)',  'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
-          opacity: 0.8
-          //size: y
-        }
-      };
+  authors = incomingData.authors;
+
+  var x = authors.map(a => a["authors"]);
+  var y = authors.map(a => a["Nobooks"]);
+  var z = authors.map(a => a["avgRating"]);
+
+  horizontalGraph(x,y,'authors')
+  horizontalGraph(x,z,'category')
       
-      var data = [trace1];
-      
-      var layout = {
-        title: 'Average Rating vs Text reviews (per dacade)',
-        showlegend: false,
-        height: 100,
-        width: 100
-      };
-      
-      Plotly.newPlot('bubble', data, layout);
 });
 
+function horizontalGraph(x,y,id){
+  var trace1 = {
+    x: y,
+    y: x,
+    type: 'bar',
+    orientation: 'h',
+    text: y.map(String),
+    textposition: 'outside',
+    marker: {
+      color: 'rgb(142,124,195)',
+      opacity: 0.8,
+    }
+  };
+    
+  var data = [trace1];
+  
+  var layout = {
+    title: 'Top 20 Authors',
+    showlegend: false
+  };
+
+  Plotly.newPlot(id, data, layout);
+}
+
+
+setTimeout(function(){ $("#tabs").tabs();}, 3000);
 
 function render(books){
   console.log('Render')
@@ -123,52 +138,64 @@ function render(books){
 }
 
 
-function plot(decadesAxis, avgRatingAxis){
-    var trace1 = {
-        x: decadesAxis,
-        y: avgRatingAxis,
-        type: 'bar',
-        //text: ['4.17 below the mean', '4.17 below the mean', '0.17 below the mean', '0.17 below the mean', '0.83 above the mean', '7.83 above the mean'],
-        marker: {
-          color: 'rgb(142,124,195)'
+function plotAvgRating(decadesAxis, avgRatingAxis){
+  var trace1 = {
+    x: decadesAxis,
+    y: avgRatingAxis,
+    type: 'bar',
+    hoverinfo: 'none',
+    text: avgRatingAxis.map(String),
+    textposition: 'outside',
+    marker: {
+      color: 'rgb(142,124,195)',
+      opacity: 0.8,
+    }
+  };
+  
+  var data = [trace1];
+  
+  var layout = {
+    title: 'Average Rating per Decade',
+    font:{
+      family: 'Raleway, sans-serif'
+    },
+    showlegend: false,
+    xaxis: {
+        range: decadesAxis,
+        tickangle: -45,
+        title: 'Decade',
+        titlefont: {
+          size: 16,
+          color: 'rgb(107, 107, 107)'
         }
-      };
-      
-      var data = [trace1];
-      
-      var layout = {
-        title: 'Average Rating Books per Decade',
-        font:{
-          family: 'Raleway, sans-serif'
-        }
-        ,
-        showlegend: false,
-        xaxis: {
-            range: decadesAxis,
-            tickangle: -45
+    },
+    yaxis: {
+      zeroline: false,
+      range: [0,5],
+      title: 'Average Rating of Books',
+        titlefont: {
+          size: 16,
+          color: 'rgb(107, 107, 107)'
         },
-        yaxis: {
-          zeroline: false,
-          autorange: true,
-          gridwidth: 2
-        },
-        bargap :0.05
-        
-      };
+    }
+  };
 
       Plotly.newPlot('avgRating', data, layout);
 }
 
 function plotNoBooks(decadesAxis, booksAxis){
     
-    
+    booksAxisStr = booksAxis.map((b) => b.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     var trace1 = {
         x: decadesAxis,
         y: booksAxis,
         type: 'bar',
-        //text: ['4.17 below the mean', '4.17 below the mean', '0.17 below the mean', '0.17 below the mean', '0.83 above the mean', '7.83 above the mean'],
+        hoverinfo: 'none',
+        text: booksAxisStr.map(String),
+        textposition: 'outside',
         marker: {
-          color: 'rgb(142,124,195)'
+          color: 'rgb(142,124,195)',
+          opacity: 0.8,
         }
       };
       
@@ -178,57 +205,130 @@ function plotNoBooks(decadesAxis, booksAxis){
         title: 'Number of Books per Decade',
         font:{
           family: 'Raleway, sans-serif'
-        }
-        /*,
+        },
         showlegend: false,
         xaxis: {
-          tickangle: -45
+            range: decadesAxis,
+            tickangle: -45,
+            title: 'Decade',
+            titlefont: {
+              size: 16,
+              color: 'rgb(107, 107, 107)'
+            }
         },
         yaxis: {
           zeroline: false,
-          gridwidth: 2
+          range: [0, 8000],
+          title: 'Average Number of Books',
+            titlefont: {
+              size: 16,
+              color: 'rgb(107, 107, 107)'
+            },
         }
-        //bargap :0.05
-        */
       };
 
       Plotly.newPlot('noBooks', data, layout);
 }
 
 function plotRatingCount(decadesAxis, booksAxis){
-    
-    
+  booksAxis = booksAxis.map((b) => (Math.round((b + Number.EPSILON) * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
     var trace1 = {
         x: decadesAxis,
         y: booksAxis,
         type: 'bar',
-        //text: ['4.17 below the mean', '4.17 below the mean', '0.17 below the mean', '0.17 below the mean', '0.83 above the mean', '7.83 above the mean'],
+        hoverinfo: 'none',
+        text: booksAxis.map(String),
+        textposition: 'outside',
         marker: {
-          color: 'rgb(142,124,195)'
+          color: 'rgb(142,124,195)',
+          opacity: 0.8,
         }
       };
       
       var data = [trace1];
       
       var layout = {
-        title: 'Books per Decade',
+        title: 'Rating Comments per Decade',
         font:{
           family: 'Raleway, sans-serif'
-        }
-        /*,
+        },
         showlegend: false,
         xaxis: {
-          tickangle: -45
+            range: decadesAxis,
+            tickangle: -45,
+            title: 'Decade',
+            titlefont: {
+              size: 16,
+              color: 'rgb(107, 107, 107)'
+            }
         },
         yaxis: {
           zeroline: false,
-          gridwidth: 2
+          range: [0,40000],
+          title: 'Number of Rating Comments',
+            titlefont: {
+              size: 16,
+              color: 'rgb(107, 107, 107)'
+            },
         }
-        //bargap :0.05
-        */
       };
 
       Plotly.newPlot('avgRatingCount', data, layout);
 }
+
+
+function plotNoPages(decadesAxis, avgNumPages){
+    
+  avgNumPages = avgNumPages.map((b) => (Math.round((b + Number.EPSILON) * 100) / 100));
+  var trace1 = {
+      x: decadesAxis,
+      y: avgNumPages,
+      type: 'bar',
+      hoverinfo: 'none',
+      text: avgNumPages.map(String),
+      textposition: 'outside',
+      marker: {
+        color: 'rgb(142,124,195)',
+        opacity: 0.8,
+      }
+    };
+    
+    var data = [trace1];
+    
+    var layout = {
+      title: 'Average Number of Pages per Decade',
+      font:{
+        family: 'Raleway, sans-serif'
+      },
+      showlegend: false,
+      xaxis: {
+          range: decadesAxis,
+          tickangle: -45,
+          title: 'Decade',
+          titlefont: {
+            size: 16,
+            color: 'rgb(107, 107, 107)'
+          }
+      },
+      yaxis: {
+        zeroline: false,
+        range: [0, 600],
+        title: 'Average Number of Pages',
+          titlefont: {
+            size: 16,
+            color: 'rgb(107, 107, 107)'
+          },
+      }
+    };
+
+    Plotly.newPlot('noPages', data, layout);
+}
+
+
+
+
+
+
 
 
