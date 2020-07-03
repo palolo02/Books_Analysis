@@ -67,7 +67,7 @@ function horizontalGraph(x,y,id,title,xTitle){
     text: y.map(String),
     textposition: 'outside',
     marker: {
-      color: 'rgb(142,124,195)',
+      color: 'rgb(40,134,142)',
       opacity: 0.8,
     },
     xaxis: {
@@ -190,7 +190,7 @@ function plotAvgRating(decadesAxis, avgRatingAxis){
     text: avgRatingAxis.map(String),
     textposition: 'outside',
     marker: {
-      color: 'rgb(142,124,195)',
+      color: 'rgb(40,134,142)',
       opacity: 0.8,
     }
   };
@@ -237,7 +237,7 @@ function plotNoBooks(decadesAxis, booksAxis){
         text: booksAxisStr.map(String),
         textposition: 'outside',
         marker: {
-          color: 'rgb(142,124,195)',
+          color: 'rgb(40,134,142)',
           opacity: 0.8,
         }
       };
@@ -284,7 +284,7 @@ function plotRatingCount(decadesAxis, booksAxis){
         text: booksAxis.map(String),
         textposition: 'outside',
         marker: {
-          color: 'rgb(142,124,195)',
+          color: 'rgb(40,134,142)',
           opacity: 0.8,
         }
       };
@@ -332,7 +332,7 @@ function plotNoPages(decadesAxis, avgNumPages){
       text: avgNumPages.map(String),
       textposition: 'outside',
       marker: {
-        color: 'rgb(142,124,195)',
+        color: 'rgb(40,134,142)',
         opacity: 0.8,
       }
     };
