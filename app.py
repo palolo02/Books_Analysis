@@ -23,7 +23,7 @@ url = f'mongodb://localhost:27017/books_db'
 
 
 
-if(True):
+if(False):
     booksDB.addDecade()
     booksDB.splitAuthors()
 
@@ -241,7 +241,7 @@ def get_books_categories():
     # Get result from books per decade
     books_json = booksDB.getCategory()
     # Jsonify teh results
-    return jsonify({"books": books_json})
+    return jsonify({"categories": books_json})
 
 if __name__ == "__main__":
     app.run(debug=True)

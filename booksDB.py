@@ -204,9 +204,6 @@ def getCategory():
                     "avgNumPages" : round(books[i]["avgNumPages"],3)
                 }
                 books_json.append(book_json)
-    # Sort per decade in ascending order
-    #books_json = sorted(books_json, key = lambda k:k['avgRating'], reverse=True)
-    
     return books_json
 
 # Function to get top 10 books per decade based on higher rating counts

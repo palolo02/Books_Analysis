@@ -6,6 +6,8 @@ d3.json("/api/v1/books/timeline/avgRating").then((incomingData) =>{
     // Access each decade to get its books
     var decadesAxis = books.map(b => b["decade"]);
     var booksAxis = books.map(b => b["books"]);
+    var totalBooks = booksAxis.reduce((a, b) => a + b, 0);
+    booksAxis = books.map(a => (Math.round((a["books"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
     var avgRatingAxis = books.map(b => b["avgRating"]);
     var avgRatingCountAxis = books.map(b => b["avgRatingCount"]);
     var avgNumPages = books.map(b => b["avgNumPages"]);
@@ -26,13 +28,37 @@ d3.json("api/v1/books/authors").then((incomingData) =>{
   var x = authors.map(a => a["authors"]);
   var y = authors.map(a => a["Nobooks"]);
   var z = authors.map(a => a["avgRating"]);
+  var totalBooks = z.reduce((a, b) => a + b, 0);
+  y = authors.map(a => (Math.round((a["Nobooks"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
 
-  horizontalGraph(x,y,'authors')
-  horizontalGraph(x,z,'category')
+  horizontalGraph(x,y,'authors','Authors with highest published books (top 20)','Decade');
+  horizontalGraph(x,z,'authorsRating','Authors with highest rating (top 20)','Decade');
+  
       
 });
 
-function horizontalGraph(x,y,id){
+
+d3.json("api/v1/books/categories").then((incomingData) =>{
+
+  categories = incomingData.categories;
+
+  var x = categories.map(a => a["category"]);
+  var y = categories.map(a => a["avgRating"]);
+  var z = categories.map(a => a["Nobooks"]);
+  var totalBooks = z.reduce((a, b) => a + b, 0);
+  z = categories.map(a => (Math.round((a["Nobooks"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
+  console.log(`Total Books: ${totalBooks}`)
+  
+
+  //horizontalGraph(x,y,'authors')
+  horizontalGraph(x,z,'category','% Published books by Category (top 20)','No books published');
+      
+});
+
+
+
+function horizontalGraph(x,y,id,title,xTitle){
+  console.log(xTitle);
   var trace1 = {
     x: y,
     y: x,
@@ -43,21 +69,38 @@ function horizontalGraph(x,y,id){
     marker: {
       color: 'rgb(142,124,195)',
       opacity: 0.8,
+    },
+    xaxis: {
+      title: xTitle,
+      zeroline: true,
+      titlefont: {
+        size: 10,
+        color: 'rgb(107, 107, 107)'
+      }
+    },
+    yaxis: {
+      titlefont: {
+        size: 10,
+        color: 'rgb(107, 107, 107)'
+      }
     }
   };
     
   var data = [trace1];
   
   var layout = {
-    title: 'Top 20 Authors',
+    title: title,
     showlegend: false
   };
 
-  Plotly.newPlot(id, data, layout);
+  Plotly.newPlot(id, data, layout, {displayModeBar: false}, {responsive: true});
 }
 
 
-setTimeout(function(){ $("#tabs").tabs();}, 3000);
+setTimeout(function(){ 
+  $("#tabStatistics").tabs();
+  $("#tabAuthors").tabs();
+}, 2000);
 
 function render(books){
   console.log('Render')
@@ -180,7 +223,7 @@ function plotAvgRating(decadesAxis, avgRatingAxis){
     }
   };
 
-      Plotly.newPlot('avgRating', data, layout);
+      Plotly.newPlot('avgRating', data, layout, {displayModeBar: false});
 }
 
 function plotNoBooks(decadesAxis, booksAxis){
@@ -218,8 +261,8 @@ function plotNoBooks(decadesAxis, booksAxis){
         },
         yaxis: {
           zeroline: false,
-          range: [0, 8000],
-          title: 'Average Number of Books',
+          range: [0, 100],
+          title: '% Published Books',
             titlefont: {
               size: 16,
               color: 'rgb(107, 107, 107)'
@@ -227,7 +270,7 @@ function plotNoBooks(decadesAxis, booksAxis){
         }
       };
 
-      Plotly.newPlot('noBooks', data, layout);
+      Plotly.newPlot('noBooks', data, layout, {displayModeBar: false});
 }
 
 function plotRatingCount(decadesAxis, booksAxis){
@@ -249,7 +292,7 @@ function plotRatingCount(decadesAxis, booksAxis){
       var data = [trace1];
       
       var layout = {
-        title: 'Rating Comments per Decade',
+        title: 'Average Rating Comments per Decade',
         font:{
           family: 'Raleway, sans-serif'
         },
@@ -274,7 +317,7 @@ function plotRatingCount(decadesAxis, booksAxis){
         }
       };
 
-      Plotly.newPlot('avgRatingCount', data, layout);
+      Plotly.newPlot('avgRatingCount', data, layout, {displayModeBar: false});
 }
 
 
@@ -322,7 +365,7 @@ function plotNoPages(decadesAxis, avgNumPages){
       }
     };
 
-    Plotly.newPlot('noPages', data, layout);
+    Plotly.newPlot('noPages', data, layout, {displayModeBar: false}, {responsive: true});
 }
 
 
