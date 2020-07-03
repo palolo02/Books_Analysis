@@ -28,10 +28,8 @@ def splitAuthors():
     for book in books:
         try:
             authors = book["authors"].split("/")
-            print(authors)
         except:
             authors = book["authors"]
-            print(authors)
         # Update decade field for each document
         collection.update_one({"_id":book["_id"]},{"$set":{"authors":authors}})
     

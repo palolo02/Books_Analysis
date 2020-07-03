@@ -23,7 +23,7 @@ url = f'mongodb://localhost:27017/books_db'
 
 
 
-if(False):
+if(True):
     booksDB.addDecade()
     booksDB.splitAuthors()
 
