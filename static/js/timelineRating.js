@@ -36,8 +36,8 @@ d3.json("api/v1/books/decade/2010").then((incomingData) =>{
       var layout = {
         title: 'Average Rating vs Text reviews (per dacade)',
         showlegend: false,
-        height: 600,
-        width: 600
+        height: 100,
+        width: 100
       };
       
       Plotly.newPlot('bubble', data, layout);

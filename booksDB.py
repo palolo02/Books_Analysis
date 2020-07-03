@@ -3,6 +3,7 @@ import math
 from datetime import datetime
 import pymongo
 import config
+import pandas as pd
 
 # Mongo connection
 url = f'mongodb://localhost:27017/books_db'
@@ -135,6 +136,7 @@ def getBooksByDecadeSel(decade):
             "authors" : book["authors"],
             "average_rating" : book["average_rating"],
             "isbn" : book["isbn"],
+            "num_pages":book["num_pages"],
             "ratings_count" : book["ratings_count"],
             "publication_date" : book["publication_date"],
             "text_reviews_count" : book["text_reviews_count"],
@@ -144,3 +146,6 @@ def getBooksByDecadeSel(decade):
         books_json.append(book_json)
     
     return books_json
+
+
+

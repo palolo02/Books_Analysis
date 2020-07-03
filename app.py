@@ -20,7 +20,7 @@ import booksDB
 app = Flask(__name__)
 
 url = f'mongodb://localhost:27017/books_db'
-if(True):
+if(False):
     booksDB.addDecade()
 
 #################################################
@@ -30,6 +30,11 @@ if(True):
 def home():
     print("======================================")
     return render_template("index.html")
+
+@app.route("/decades")
+def decades():
+    print("======================================")
+    return render_template("decades.html")
 
 @app.route("/api/v1/books", methods=["GET"])
 def get_books():
@@ -138,12 +143,86 @@ def get_books_timeline_avgRating():
     # Jsonify teh results
     return jsonify({"books": books_json})
 
+
 @app.route("/api/v1/books/decade/<decade>", methods=["GET"])
 def get_books_decade_selection(decade):
     # Get result from books per decade
     books_json = booksDB.getBooksByDecadeSel(int(decade))
     # Jsonify teh results
+   
     return jsonify({"books": books_json})
+
+@app.route("/api/v1/books/decade_unique", methods=["GET"])
+def get_unique_decade():
+    conn = url
+    #Add Mongo Validation 
+    client = pymongo.MongoClient(conn)
+        
+    # Define database and collection
+    db = client.books_db
+    collection = db.book_collection
+    unique = collection.distinct('decade')       
+    
+    # Send json result
+    return jsonify({"decade": unique})
+
+@app.route("/api/v1/decade/grouped", methods=["GET"])
+def get_group_decade():
+    conn = url
+    #Add Mongo Validation 
+    client = pymongo.MongoClient(conn)
+        
+    # Define database and collection
+    db = client.books_db
+    collection = db.book_collection
+    grouped = collection.aggregate([{"$group":{"_id":{"decade":"$decade","category":"$category"},"counter":{"$sum":1}}}])
+
+    grouped = list(grouped)  
+    books_json=[]
+    for group in grouped :
+        # Filter those categories with at least 10 books
+        print(group["_id"])
+        # Build json object
+        book_json = {
+            "decade" : group["_id"]["decade"],
+            "category" : group["_id"]["category"],
+            "counter" : group["counter"]
+            
+        }
+        books_json.append(book_json)
+      
+    
+    # Send json result
+    return jsonify({"books":books_json})
+
+@app.route("/api/v1/decade/grouped/<decade>", methods=["GET"])
+def get_group_decade_param(decade):
+    conn = url
+    #Add Mongo Validation 
+    client = pymongo.MongoClient(conn)
+        
+    # Define database and collection
+    db = client.books_db
+    collection = db.book_collection
+    grouped = collection.aggregate([{"$match":{"$expr": { "$eq": [ "$decade", int(decade)]}}},{"$group":{"_id":{"category":"$category"},"counter":{"$sum":1}}}])
+
+    grouped = list(grouped)  
+    books_json=[]
+    for group in grouped :
+        # Filter those categories with at least 10 books
+        print(group["_id"])
+        # Build json object
+        book_json = {            
+            "category" : group["_id"]["category"],
+            "counter" : group["counter"]
+            
+        }
+        books_json.append(book_json)
+      
+    
+    # Send json result
+    return jsonify({"books":books_json})
+
 
 
 if __name__ == "__main__":
