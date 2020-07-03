@@ -16,38 +16,48 @@ d3.json("/api/v1/books/timeline/avgRating").then((incomingData) =>{
     plotNoBooks(decadesAxis, booksAxis);
     plotRatingCount(decadesAxis, avgRatingCountAxis);
     plotNoPages(decadesAxis, avgNumPages);
-    $("#tabs").tabs();
+    
 })
 
-d3.json("api/v1/books/decade/2010").then((incomingData) =>{
-    books = incomingData.books;
-    var x = books.map(b => b["text_reviews_count"]);
-    var y = books.map(b => b["average_rating"]);
+d3.json("api/v1/books/authors").then((incomingData) =>{
 
-    var trace1 = {
-        x: x,
-        y: y,
-        mode: 'markers',
-        marker: {
-          //color: ['rgb(93, 164, 214)', 'rgb(255, 144, 14)',  'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
-          opacity: 0.8
-          //size: y
-        }
-      };
-      
-      var data = [trace1];
-      
-      var layout = {
-        title: 'Average Rating vs Text reviews (per dacade)',
-        showlegend: false,
-        height: 600,
-        width: 600
-      };
-      
-      //Plotly.newPlot('noPages', data, layout);
+  authors = incomingData.authors;
+
+  var x = authors.map(a => a["authors"]);
+  var y = authors.map(a => a["Nobooks"]);
+  var z = authors.map(a => a["avgRating"]);
+
+  horizontalGraph(x,y,'authors')
+  horizontalGraph(x,z,'category')
       
 });
 
+function horizontalGraph(x,y,id){
+  var trace1 = {
+    x: y,
+    y: x,
+    type: 'bar',
+    orientation: 'h',
+    text: y.map(String),
+    textposition: 'outside',
+    marker: {
+      color: 'rgb(142,124,195)',
+      opacity: 0.8,
+    }
+  };
+    
+  var data = [trace1];
+  
+  var layout = {
+    title: 'Top 20 Authors',
+    showlegend: false
+  };
+
+  Plotly.newPlot(id, data, layout);
+}
+
+
+setTimeout(function(){ $("#tabs").tabs();}, 3000);
 
 function render(books){
   console.log('Render')

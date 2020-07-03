@@ -160,7 +160,7 @@ def get_books_authors():
     # Get result from books per decade
     books_json = booksDB.getAuthors()
     # Jsonify teh results
-    return jsonify({"books": books_json})
+    return jsonify({"authors": books_json})
 
 @app.route("/api/v1/books/categories", methods=["GET"])
 def get_books_categories():
