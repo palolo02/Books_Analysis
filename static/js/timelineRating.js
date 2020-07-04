@@ -7,7 +7,7 @@ d3.json("/api/v1/books/timeline/avgRating").then((incomingData) =>{
     var decadesAxis = books.map(b => b["decade"]);
     var booksAxis = books.map(b => b["books"]);
     var totalBooks = booksAxis.reduce((a, b) => a + b, 0);
-    booksAxis = books.map(a => (Math.round((a["books"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
+    //booksAxis = books.map(a => (Math.round((a["books"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
     var avgRatingAxis = books.map(b => b["avgRating"]);
     var avgRatingCountAxis = books.map(b => b["avgRatingCount"]);
     var avgNumPages = books.map(b => b["avgNumPages"]);
@@ -29,10 +29,10 @@ d3.json("api/v1/books/authors").then((incomingData) =>{
   var y = authors.map(a => a["Nobooks"]);
   var z = authors.map(a => a["avgRating"]);
   var totalBooks = z.reduce((a, b) => a + b, 0);
-  y = authors.map(a => (Math.round((a["Nobooks"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
+  //y = authors.map(a => (Math.round((a["Nobooks"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
 
-  horizontalGraph(x,y,'authors','Authors with highest published books (top 20)','Decade');
-  horizontalGraph(x,z,'authorsRating','Authors with highest rating (top 20)','Decade');
+  horizontalGraph(x,y,'authors','Authors with highest published books (top 20)','Decade',[0,100]);
+  horizontalGraph(x,z,'authorsRating','Authors with highest rating (top 20)','Decade',[0,5]);
   
       
 });
@@ -45,13 +45,13 @@ d3.json("api/v1/books/categories").then((incomingData) =>{
   var x = categories.map(a => a["category"]);
   var y = categories.map(a => a["avgRating"]);
   var z = categories.map(a => a["Nobooks"]);
-  var totalBooks = z.reduce((a, b) => a + b, 0);
+  //var totalBooks = z.reduce((a, b) => a + b, 0);
   //z = categories.map(a => (Math.round((a["Nobooks"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
-  console.log(`Total Books: ${totalBooks}`)
+  
   
 
   //horizontalGraph(x,y,'authors')
-  horizontalGraph(x,z,'category',`Top 10`,'No books published');
+  horizontalGraph(x,z,'category',`Top 10`,'No books published',[0,4500]);
       
 });
 
@@ -109,8 +109,8 @@ function historicalGraph(x,y,author){
 
 }
 
-function horizontalGraph(x,y,id,title,xTitle){
-  console.log(xTitle);
+function horizontalGraph(x,y,id,title,xTitle, range){
+  
   var trace1 = {
     x: y,
     y: x,
@@ -126,13 +126,13 @@ function horizontalGraph(x,y,id,title,xTitle){
       title: xTitle,
       zeroline: true,
       titlefont: {
-        size: 10,
+        size: 7,
         color: 'rgb(107, 107, 107)'
       }
     },
     yaxis: {
       titlefont: {
-        size: 10,
+        size: 7,
         color: 'rgb(107, 107, 107)'
       }
     }
@@ -142,7 +142,24 @@ function horizontalGraph(x,y,id,title,xTitle){
   
   var layout = {
     title: title,
-    showlegend: false
+    showlegend: false,
+    xaxis :{
+      range: range
+    },
+    xaxis :{
+      titlefont: {
+        size: 5,
+        color: 'rgb(107, 107, 107)'
+      }
+    },
+    yaxis: {
+      automargin: true,
+      ticktext:x,
+      titlefont: {
+        size: 7,
+        color: 'rgb(107, 107, 107)'
+      }
+    }
   };
 
   Plotly.newPlot(id, data, layout, {displayModeBar: false}, {responsive: true});
@@ -152,85 +169,7 @@ function horizontalGraph(x,y,id,title,xTitle){
 setTimeout(function(){ 
   $("#tabStatistics").tabs();
   $("#tabAuthors").tabs();
-}, 2000);
-
-function render(books){
-  console.log('Render')
-  var svg = d3.select("#test");
-  var margin = 250;
-  var width = 800 - margin;
-  var height = 800 - margin;
-
-  var xScale = d3.scaleBand().range([0, width]).padding(0.4);
-  var yScale = d3.scaleLinear().range([height,0]);
-
-  var g = svg.append("g").attr("transform", "translate(" + 100 + "," + 100 + ")");
-
-  xScale.domain(books.map(function(d) { return d.decade; }));
-  yScale.domain([0, d3.max(books, function(d) { return d.avgRating; })]);
-
-  g.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(xScale));
-
-  g.append("g")
-    .call(d3.axisLeft(yScale).tickFormat(function(d){
-        return d;
-    }).ticks((books.map(b => b["avgRating"]).length)))
-    .append("text")
-    .attr("y", 6)
-    .attr("dy", "0.71em")
-    .attr("text-anchor", "end")
-    .text("value");
-
-    g.selectAll(".bar")
-    .data(books)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .attr("x", function(d) { return xScale(d.decade); })
-    .attr("y", function(d) { return yScale(d.avgRating); })
-    .attr("width", xScale.bandwidth())
-    .attr("height", function(d) { return height - yScale(d.avgRating); });
-    
-    svg.append("text")
-    .attr("transform", "translate(100,0)")
-    .attr("x", 50)
-    .attr("y", 50)
-    .attr("font-size", "24px")
-    .text('Average Rating Books per Decade')
-
-    g.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(xScale))
-    .append("text")
-    .attr("y", 50)
-    .attr("x", 300)
-    .attr("text-anchor", "end")
-    .attr("stroke", "black")
-    .text("Decade");
-
-    g.append("g")
-    .call(d3.axisLeft(yScale)
-    .tickFormat(function(d){
-        return d;
-    }).ticks(10))
-    .append("text")
-    .attr("y", 6)
-    .attr("dy", "-5.1em")
-    .attr("text-anchor", "end")
-    .attr("stroke", "black")
-    .text("Average Rating");
-
-    
-    svg.selectAll("text")
-    .data(books)
-    .enter().append("text")
-    .text(function(d) { return yScale(d.avgRating)})
-    .attr("x", function(d,j) { return xScale(d.decade)*j; })
-    .attr("y", function(d) { return yScale(d.avgRating)+0.5; })
-    .style('color','black')
-    
-}
+}, 1500);
 
 
 function plotAvgRating(decadesAxis, avgRatingAxis){
@@ -297,7 +236,7 @@ function plotNoBooks(decadesAxis, booksAxis){
       var data = [trace1];
       
       var layout = {
-        title: 'Number of Books per Decade',
+        title: 'Number of Published Books per Decade',
         font:{
           family: 'Raleway, sans-serif'
         },
@@ -313,8 +252,8 @@ function plotNoBooks(decadesAxis, booksAxis){
         },
         yaxis: {
           zeroline: false,
-          range: [0, 100],
-          title: '% Published Books',
+          //range: [0, 100],
+          title: 'Published Books',
             titlefont: {
               size: 16,
               color: 'rgb(107, 107, 107)'

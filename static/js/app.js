@@ -51,30 +51,11 @@ d3.json("/api/v1/pages").then((incomingData) =>{
 
 d3.json("/api/v1/kpi").then((incomingData) =>{
     
-    books = incomingData.books;
-
-    // create svg element:
-    var svg = d3.select("#books_count").append("svg").attr("width", 200).attr("height", 200)
-    var g = svg.append("g")
-
-    // Add the path using this helper function
-   var circle = g.append('circle')
-    .attr('cx', 100)
-    .attr('cy', 100)
-    .attr('r', 50)
-    .attr('stroke', 'none')
-    .attr('fill', '#69a3b2')
-    .attr('opacity',0.7)
-    .append("text");
-
-    g.append("text")
-    .attr("x", 50)
-    .attr("y", 100)
-    .attr("stroke", "white")
-    .text("Authors");
+    kpis = incomingData.kpis;
     
-
-    
+    d3.select("#kpiBooks").text(kpis.books.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    d3.select("#kpiAuthors").text(kpis.authors.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    d3.select("#kpiCategories").text(kpis.category.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 
 });
 
