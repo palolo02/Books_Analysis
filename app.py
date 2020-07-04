@@ -253,6 +253,7 @@ def get_books_categories():
 
 @app.route("/api/v1/books/authors/<author>", methods=["GET"])
 def get_author_history(author):
+    print(f"Call to authors: {author}")
     # Get result from books per decade
     authors_json = booksDB.getHistoryByAuthor(author)
     # Jsonify teh results

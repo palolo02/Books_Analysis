@@ -1,4 +1,9 @@
 // Read books per decade
+var dataHistoric;
+var trace1Historic;
+var trace2Historic;
+var layoutHistoric;
+
 d3.json("/api/v1/books/timeline/avgRating").then((incomingData) =>{
     
     books = incomingData.books;
@@ -29,14 +34,37 @@ d3.json("api/v1/books/authors").then((incomingData) =>{
   var y = authors.map(a => a["Nobooks"]);
   var z = authors.map(a => a["avgRating"]);
   var totalBooks = z.reduce((a, b) => a + b, 0);
+  var xSorted = authors.map(a => a["authors"]);
+  xSorted.sort()
   //y = authors.map(a => (Math.round((a["Nobooks"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
+  var selector = d3.select("#selDataset");
+  xSorted.forEach((author)=>{
+      selector.append("option").text(author).attr("value",author); 
+  });
 
-  horizontalGraph(x,y,'authors','Authors with highest published books (top 20)','Decade',[0,100]);
-  horizontalGraph(x,z,'authorsRating','Authors with highest rating (top 20)','Decade',[0,5]);
+  d3.select("#selDataset").on("change",optionChanged);
+
+  horizontalGraph(x,y,'authors','Authors with highest published books (top 20)','No Published books',[0,100]);
+  horizontalGraph(x,z,'authorsRating','Authors with highest rating (top 20)','Rating',[0,5]);
   
       
 });
 
+function optionChanged(){
+  var author = d3.select("#selDataset").property("value");
+  console.log(author)
+  var url = `/api/v1/books/authors/${author}`
+  console.log(url)
+  d3.json(url).then((incomingData) =>{
+    var x = incomingData.authors["decades"].map(a => a["_id"]);
+    var y = incomingData.authors["decades"].map(a => a["avgRating"]);
+    var author = incomingData.authors["author"]
+    console.log(x);
+    console.log(y);
+    console.log(author);
+    historicalGraph(x,y,author,true);
+  });
+}
 
 d3.json("api/v1/books/categories").then((incomingData) =>{
 
@@ -55,7 +83,6 @@ d3.json("api/v1/books/categories").then((incomingData) =>{
       
 });
 
-
 // Historical Rating
 d3.json("/api/v1/books/authors/Stephen%20King").then((incomingData) =>{
 
@@ -65,47 +92,76 @@ d3.json("/api/v1/books/authors/Stephen%20King").then((incomingData) =>{
   var y = historical["decades"].map(a => a["avgRating"]);
   var author = historical["author"]
   
-  historicalGraph(x,y,author);
+  historicalGraph(x,y,author,false);
       
 });
 
 
-function historicalGraph(x,y,author){
-  var trace1 = {
+function historicalGraph(x,y,author,isUpdate){
+  
+  if(isUpdate)
+  {
+    dataHistoric[0]["x"] = x;
+    dataHistoric[0]["y"] = y;
+    dataHistoric[1]["x"] = x;
+    dataHistoric[1]["y"] = y;
+    dataHistoric[1]["text"] = y.map(String);
+    layoutHistoric.title = `Historical Rating - ${author}`, // updates the title
+    Plotly.redraw('authorsDecade');
+    return 
+  }
+
+  var trace1Historic = {
     x: x,
     y: y,
     type: 'scatter',
     orientation: 'h',
     text: y.map(String),
-    textposition: 'outside',
     marker: {
       color: 'rgb(40,134,142)',
       opacity: 0.8,
-    },
+    }
+  };
+
+  var trace2Historic = {
+    x: x,
+    y: y,
+    type: 'scatter',
+    orientation: 'h',
+    text: y.map(String),
+    mode: 'markers+text',
+    textposition: 'top center',
+    marker: {
+      color: 'rgb(40,134,142)',
+      opacity: 0.8,
+    }
+  };
+    
+  dataHistoric = [trace1Historic,trace2Historic];
+  
+  layoutHistoric = {
+    title: `Historical Rating - ${author}`,
+    showlegend: false,
     xaxis: {
       title: 'Decades',
       zeroline: true,
       titlefont: {
-        size: 10,
+        size: 16,
         color: 'rgb(107, 107, 107)'
       }
     },
     yaxis: {
+      title: 'Rating',
+      zeroline: true,
+      range: [0,5],
       titlefont: {
-        size: 10,
+        size: 16,
         color: 'rgb(107, 107, 107)'
       }
     }
   };
-    
-  var data = [trace1];
-  
-  var layout = {
-    title: `Historical Max Rating ${author}`,
-    showlegend: false
-  };
 
-  Plotly.newPlot('authorsDecade', data, layout, {displayModeBar: false}, {responsive: true});
+  Plotly.newPlot('authorsDecade', dataHistoric, layoutHistoric, {displayModeBar: false}, {responsive: true});
 
 }
 
@@ -121,20 +177,6 @@ function horizontalGraph(x,y,id,title,xTitle, range){
     marker: {
       color: 'rgb(40,134,142)',
       opacity: 0.8,
-    },
-    xaxis: {
-      title: xTitle,
-      zeroline: true,
-      titlefont: {
-        size: 7,
-        color: 'rgb(107, 107, 107)'
-      }
-    },
-    yaxis: {
-      titlefont: {
-        size: 7,
-        color: 'rgb(107, 107, 107)'
-      }
     }
   };
     
@@ -145,8 +187,9 @@ function horizontalGraph(x,y,id,title,xTitle, range){
     showlegend: false,
     xaxis :{
       range: range,
+      title: xTitle,
       titlefont: {
-        size: 5,
+        size: 16,
         color: 'rgb(107, 107, 107)'
       }
     },
@@ -356,11 +399,4 @@ function plotNoPages(decadesAxis, avgNumPages){
 
     Plotly.newPlot('noPages', data, layout, {displayModeBar: false}, {responsive: true});
 }
-
-
-
-
-
-
-
 
