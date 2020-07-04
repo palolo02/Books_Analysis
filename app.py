@@ -23,7 +23,7 @@ url = f'mongodb://localhost:27017/books_db'
 
 
 
-if(True):
+if(False):
     booksDB.addDecade()
     booksDB.splitAuthors()
 
@@ -185,8 +185,7 @@ def get_group_decade():
     grouped = list(grouped)  
     books_json=[]
     for group in grouped :
-        # Filter those categories with at least 10 books
-        print(group["_id"])
+        
         # Build json object
         book_json = {
             "decade" : group["_id"]["decade"],
@@ -200,6 +199,7 @@ def get_group_decade():
     # Send json result
     return jsonify({"books":books_json})
 
+#function to group by decade and category, counting the number of categories
 @app.route("/api/v1/decade/grouped/<decade>", methods=["GET"])
 def get_group_decade_param(decade):
     conn = url
@@ -215,14 +215,18 @@ def get_group_decade_param(decade):
     books_json=[]
     for group in grouped :
         # Filter those categories with at least 10 books
-        print(group["_id"])
+       
         # Build json object
-        book_json = {            
-            "category" : group["_id"]["category"],
-            "counter" : group["counter"]
-            
-        }
-        books_json.append(book_json)
+
+          # Remove 'UNKNOWN' or 'false' Categories
+        if((group["_id"]["category"] != "false") & (group["_id"]["category"] != "UNKNOWN")):
+                # Build json object              
+
+            book_json = {            
+                "category" : group["_id"]["category"],
+                "counter" : group["counter"]                
+            }
+            books_json.append(book_json)
       
     
     # Send json result
@@ -242,6 +246,39 @@ def get_books_categories():
     books_json = booksDB.getCategory()
     # Jsonify teh results
     return jsonify({"books": books_json})
+
+@app.route("/api/v1/decade/grouped/authors/<decade>", methods=["GET"])
+def get_groupDecAuthors(decade):
+    conn = url
+    #Add Mongo Validation 
+    client = pymongo.MongoClient(conn)
+        
+    # Define database and collection
+    db = client.books_db
+    collection = db.book_collection
+    books = list(collection.aggregate([{"$match":{"$expr": { "$eq": [ "$decade", int(decade)]}}},{"$group":{"_id":{"decade":"$decade","category":"$category"},"avgNumPages":{"$avg":"$num_pages"}}}]))
+    
+     
+    books_json=[]
+    print(books)
+    for book in books:
+               
+         # Remove 'UNKNOWN' or 'false' Categories
+        if((book["_id"]["category"] != "false") & (book["_id"]["category"] != "UNKNOWN")):
+                # Build json object                   
+
+            book_json = {
+                "decade" : book["_id"]["decade"],  
+                "category":book["_id"]["category"],          
+                "avgNumPages" : round(book["avgNumPages"],3)
+            }
+                
+        
+            books_json.append(book_json)
+      
+    
+    # Send json result
+    return jsonify({"books":books_json})
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -29,12 +29,11 @@ function optionChanged(){
     test.html("");
     // Read books per decade
     d3.json(`/api/v1/decade/grouped/${elDrop}`).then((incomingData) =>{
-        books = incomingData.books;
+        var books = incomingData.books;
         console.log(books);
         var x = books.map((d)=> d.category)
         var y = books.map((d)=>d.counter)
-        console.log(x)
-        console.log(y)
+        
         var trace1 = {
             x: y,
             y: x,
@@ -49,13 +48,43 @@ function optionChanged(){
             var data = [trace1];
             
             var layout = {
-            title: 'Categories per decade',
+            title: 'Books per category',
             showlegend: false
             };
             
         Plotly.newPlot('graphic', data, layout);
-       
+
+     
 
     })
+    d3.json(`/api/v1/decade/grouped/authors/${elDrop}`).then((incomingData)=>{
+        var data = incomingData.books;
+        var avg = data.map((d)=>d.avgNumPages);
+        var cate=data.map((d)=>d.category)
+        var trace1 = {
+            x: cate,
+            y: avg,
+            type: 'bar',           
+            marker: {
+                color: 'rgb(142,124,195)',
+                opacity: 0.8,
+            }
+            };
+            
+            var data = [trace1];
+            
+            var layout = {
+            title: `No. pages per category (avg) Decade: ${elDrop}`,
+            showlegend: false
+            };
+            
+        Plotly.newPlot('graphic2', data, layout);
+
+        
+        console.log(avg)
+        console.log(cate)
+       
+    })
+    
 
 }
