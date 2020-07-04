@@ -1,0 +1,44 @@
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+    background-color: purple;
+    color: white;
+    border: 1px solid black;
+}
+
+/* Adding padding to graphs */
+.innerTab{
+    padding: 10px;
+}
+
+/* Replace style from Bootstrap */
+.ui-widget-content, .ui-widget.ui-widget-content, .ui-widget-header{
+    border: 0px;
+    background-color: white;
+}
+
+
+
+/* KPIS */
+.kpi {
+    background-color: #eeeeee;
+    height: 80px;
+    width: 80%;
+    text-align: center;
+    margin: 15px 5px;
+}
+
+.kpiNumber{
+    color:purple;
+    font-size: 30px;
+}
+
+.kpiText{
+    color:black;
+    font-size: 15px;
+}
+
+
+.header{
+    color:purple;
+    padding-bottom: 5px;
+    border-bottom: 1px solid purple;
+}

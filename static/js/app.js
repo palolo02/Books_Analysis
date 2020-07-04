@@ -3,7 +3,7 @@ var books = [];
 
 // Read books from Flask
 d3.json("/api/v1/books").then((incomingData) =>{
-    
+    /*    
     books = incomingData.books;
 
     d3.select("#book").append("h3").text(books[0].title);
@@ -14,7 +14,7 @@ d3.json("/api/v1/books").then((incomingData) =>{
     d3.select("#book").append("h5").text(books[0].text_reviews_count);
     d3.select("#book").append("h5").text(books[0].publication_date);
     d3.select("#book").append("h5").text(books[0].category);
-
+    */
 });
 
 
@@ -29,11 +29,11 @@ d3.json("/api/v1/pages").then((incomingData) =>{
         mode: 'markers',
         marker: {
             color:books.map((d)=>d.num_pages) ,
-            size: books.map((d)=>d.average_rating*8)
+            size: books.map((d)=>d.average_rating*7)
         }
     }
     var layout = {
-        title: 'No Pages vs Average Rating (top 50)',
+        title: 'Top 50',
         font:{
           family: 'Raleway, sans-serif'
         },

@@ -245,7 +245,15 @@ def get_books_categories():
     # Get result from books per decade
     books_json = booksDB.getCategory()
     # Jsonify teh results
-    return jsonify({"books": books_json})
+    return jsonify({"categories": books_json})
+
+@app.route("/api/v1/books/authors/<author>", methods=["GET"])
+def get_author_history(author):
+    # Get result from books per decade
+    authors_json = booksDB.getHistoryByAuthor(author)
+    # Jsonify teh results
+    return jsonify({"authors": authors_json})
+
 
 @app.route("/api/v1/decade/grouped/authors/<decade>", methods=["GET"])
 def get_groupDecAuthors(decade):
