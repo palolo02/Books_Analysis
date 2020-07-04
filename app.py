@@ -132,13 +132,17 @@ def get_kpi():
     # Define database and collection
     db = client.books_db
     collection = db.book_collection
-    
+    kpis_json = {}
     # Get the top 100 books with more comments (first criteria)
-    books = collection.count()
+    books = list(collection.distinct("title"))
+    authors = list(collection.distinct("authors"))
+    category = list(collection.distinct("category"))
     
-   
+    kpis_json["books"] = len(books)
+    kpis_json["authors"] = len(authors)
+    kpis_json["category"] = len(category)
     # Send json result
-    return jsonify({"books": books})
+    return jsonify({"kpis": kpis_json})
 
 
 @app.route("/api/v1/books/timeline/avgRating", methods=["GET"])
