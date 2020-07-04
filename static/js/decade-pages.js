@@ -40,16 +40,18 @@ function optionChanged(){
             type: 'bar',
             orientation: 'h',
             marker: {
-                color: 'rgb(142,124,195)',
-                opacity: 0.8,
-            }
-            };
+                color: 'rgb(40,134,142)',
+                opacity: 0.8,        
+            }           
             
+            };            
             var data = [trace1];
             
             var layout = {
             title: 'Books per category',
-            showlegend: false
+            showlegend: false,
+            yaxis:{automargin: true,
+                ticktext:x}
             };
             
         Plotly.newPlot('graphic', data, layout);
@@ -66,7 +68,7 @@ function optionChanged(){
             y: avg,
             type: 'bar',           
             marker: {
-                color: 'rgb(142,124,195)',
+                color: 'rgb(40,134,142)',
                 opacity: 0.8,
             }
             };
@@ -74,8 +76,10 @@ function optionChanged(){
             var data = [trace1];
             
             var layout = {
-            title: `No. pages per category (avg) Decade: ${elDrop}`,
-            showlegend: false
+            title: `Average number of pages per category (Decade: ${elDrop})`,
+            showlegend: false,
+            xaxis:{automargin: true,
+                ticktext:cate}
             };
             
         Plotly.newPlot('graphic2', data, layout);
