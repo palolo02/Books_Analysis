@@ -189,7 +189,7 @@ def getCategory():
     books = list(books)
     books_json = []
     # Get only the top N
-    topN = 20
+    topN = 10
     for i in range(topN):
         # Filter those categories with at least 10 books
         if(books[i]["noBooks"] >= 10):
@@ -239,3 +239,24 @@ def getAuthors():
     #books_json = sorted(books_json, key = lambda k:k['avgRatingCount'], reverse=True)
     
     return books_json
+
+
+def getHistoryByAuthor(author):
+    # Add Mongo Validation
+    print(f"Param Author: {author}")
+    conn = url
+    client = pymongo.MongoClient(conn)
+    author_json = {}
+    # Define database and collection
+    db = client.books_db
+    collection = db.book_collection
+    # Get the authors who wrote the highest number of books and got the highest rating
+    author_decades = list(collection.aggregate([{"$unwind":"$authors"},{"$match":{"$expr":{"$eq":["$authors",author]}}},{"$group":{"_id":"$decade","avgRating":{"$max":"$average_rating"},"noBooks":{"$sum":1},"avgPages":{"$avg":"$num_pages"},"avgComments":{"$avg":"$ratings_count"},"avgTextComments":{"$avg":"$text_reviews_count"}}},{"$sort": {"_id":1}}]))
+    decades_json = []
+    # Get only the top N
+    for decade in author_decades:
+        print(decade)
+        decades_json.append(decade)
+    author_json["author"] = author
+    author_json["decades"] = decades_json
+    return author_json

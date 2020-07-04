@@ -46,16 +46,68 @@ d3.json("api/v1/books/categories").then((incomingData) =>{
   var y = categories.map(a => a["avgRating"]);
   var z = categories.map(a => a["Nobooks"]);
   var totalBooks = z.reduce((a, b) => a + b, 0);
-  z = categories.map(a => (Math.round((a["Nobooks"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
+  //z = categories.map(a => (Math.round((a["Nobooks"]/totalBooks + Number.EPSILON) * 100) / 100)*100);
   console.log(`Total Books: ${totalBooks}`)
   
 
   //horizontalGraph(x,y,'authors')
-  horizontalGraph(x,z,'category','% Published books by Category (top 20)','No books published');
+  horizontalGraph(x,z,'category',`Top 10`,'No books published');
       
 });
 
 
+// Historical Rating
+d3.json("/api/v1/books/authors/Stephen%20King").then((incomingData) =>{
+
+  historical = incomingData.authors;
+
+  var x = historical["decades"].map(a => a["_id"]);
+  var y = historical["decades"].map(a => a["avgRating"]);
+  var author = historical["author"]
+  
+  historicalGraph(x,y,author);
+      
+});
+
+
+function historicalGraph(x,y,author){
+  var trace1 = {
+    x: x,
+    y: y,
+    type: 'scatter',
+    orientation: 'h',
+    text: y.map(String),
+    textposition: 'outside',
+    marker: {
+      color: 'rgb(40,134,142)',
+      opacity: 0.8,
+    },
+    xaxis: {
+      title: 'Decades',
+      zeroline: true,
+      titlefont: {
+        size: 10,
+        color: 'rgb(107, 107, 107)'
+      }
+    },
+    yaxis: {
+      titlefont: {
+        size: 10,
+        color: 'rgb(107, 107, 107)'
+      }
+    }
+  };
+    
+  var data = [trace1];
+  
+  var layout = {
+    title: `Historical Max Rating ${author}`,
+    showlegend: false
+  };
+
+  Plotly.newPlot('authorsDecade', data, layout, {displayModeBar: false}, {responsive: true});
+
+}
 
 function horizontalGraph(x,y,id,title,xTitle){
   console.log(xTitle);

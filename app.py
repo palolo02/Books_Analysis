@@ -243,5 +243,13 @@ def get_books_categories():
     # Jsonify teh results
     return jsonify({"categories": books_json})
 
+@app.route("/api/v1/books/authors/<author>", methods=["GET"])
+def get_author_history(author):
+    # Get result from books per decade
+    authors_json = booksDB.getHistoryByAuthor(author)
+    # Jsonify teh results
+    return jsonify({"authors": authors_json})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
