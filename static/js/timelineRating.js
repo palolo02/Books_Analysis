@@ -144,9 +144,7 @@ function horizontalGraph(x,y,id,title,xTitle, range){
     title: title,
     showlegend: false,
     xaxis :{
-      range: range
-    },
-    xaxis :{
+      range: range,
       titlefont: {
         size: 5,
         color: 'rgb(107, 107, 107)'
@@ -252,7 +250,7 @@ function plotNoBooks(decadesAxis, booksAxis){
         },
         yaxis: {
           zeroline: false,
-          //range: [0, 100],
+          range: [0, 7500],
           title: 'Published Books',
             titlefont: {
               size: 16,
